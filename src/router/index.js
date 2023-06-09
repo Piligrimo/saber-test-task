@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import BlogFeed from '../views/BlogFeed.vue';
-import NewPost from '../views/NewPost.vue';
+import PostForm from '../views/PostForm.vue';
 
 Vue.use(VueRouter);
 
@@ -18,7 +18,12 @@ const routes = [
   {
     path: '/new',
     name: 'new',
-    component: NewPost,
+    component: PostForm,
+  },
+  {
+    path: '/edit/:id',
+    name: 'edit',
+    component: PostForm,
   },
 ];
 

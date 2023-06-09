@@ -15,15 +15,25 @@
       <div class="post" v-for="post in posts" :key="post.id">
         <div class="post__header">
           <div class="post__info">
-            <h2>{{post.title}}</h2>
+            <h2>{{post.title}} <span v-if="post.isEdited" class="post__edited">(ред.)</span></h2>
             <p class="post__time">{{formatTime(post.time)}}</p>
           </div>
-          <img
-            class="post__delete"
-            :src="deleteIcon"
-            alt="Удалить пост"
-            @click="deletePost(post.id)"
-          />
+          <div class="post__actions">
+            <router-link :to="{name: 'edit', params: { id: post.id } }">
+              <img
+                class="post__action"
+                :src="editIcon"
+                alt="Редактировать пост"
+              />
+           </router-link>
+            <img
+              class="post__action"
+              :src="deleteIcon"
+              alt="Удалить пост"
+              @click="deletePost(post.id)"
+            />
+
+          </div>
         </div>
         <p>{{post.text}}</p>
       </div>
@@ -39,6 +49,7 @@
 import postsApi from '../api/posts';
 import deleteIcon from '../assets/cross.svg';
 import newIcon from '../assets/plus.svg';
+import editIcon from '../assets/edit.svg';
 
 export default {
   name: 'BlogFeed',
@@ -47,6 +58,7 @@ export default {
       posts: [],
       deleteIcon,
       newIcon,
+      editIcon,
     };
   },
   async created() {
@@ -84,17 +96,30 @@ export default {
   margin: 0;
   font-size: 12px;
 }
+.post__edited {
+  color: #8194a7;
+  font-size: 10px;
+  font-weight: normal;
+}
+
 .post__header {
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
 }
-.post__delete {
+
+.post__actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.post__action {
   width: 25px;
   cursor: pointer;
   opacity: 0;
   transition: opacity 0.3s;
 }
-.post:hover .post__delete {
+.post:hover .post__action {
   opacity: 1;
 }
 .none {
@@ -113,6 +138,10 @@ export default {
   -webkit-box-shadow: 2px 2px 9px 3px rgb(34 60 80 / 20%);
   -moz-box-shadow: 2px 2px 9px 3px rgb(34 60 80 / 20%);
   box-shadow: 2px 2px 9px 3px rgb(34 60 80 / 20%);
+}
+
+.new:hover {
+  background-color: #f7f7f7;
 }
 
 .new__icon {
