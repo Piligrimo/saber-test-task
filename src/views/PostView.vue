@@ -25,6 +25,7 @@
           :class="{ _answer: item.depth}"
           :style="{'margin-left': (item.depth % breakThreshold) * 30 + 'px'}"
         >
+          <blog-user :user="item.author" :showName="true"/>
           <p>{{item.text}}</p>
           <div v-if="item.id !== commentToAnswer">
             <button class="blog-button _small" @click="expandComment(item)">Обсудить</button>
@@ -57,11 +58,14 @@
 
 <script>
 
+import { mapState } from 'vuex';
+import BlogUser from '@/components/BlogUser.vue';
 import postsApi from '../api/posts';
 import commentApi from '../api/comments';
 import downArrow from '../assets/down.svg';
 
 export default {
+  components: { BlogUser },
   name: 'PostView',
   data() {
     return {
@@ -82,6 +86,7 @@ export default {
     this.getInitialComments();
   },
   computed: {
+    ...mapState({ user: (state) => state.user }),
     postId() {
       return this.$route.params.id;
     },
@@ -119,6 +124,7 @@ export default {
           type: targetType,
           id: targetType === 'post' ? this.postId : parentComment.id,
         },
+        author: this.user,
       };
       await commentApi.createComment(comment);
       if (targetType === 'post') {

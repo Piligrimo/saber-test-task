@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div v-if="isAuth" class="actions">
-      <router-link v-if="$route.name === 'edit'" :to="{name: 'feed'}">
+      <router-link v-if="isBackButtonVisible" :to="{name: 'feed'}">
         <img
           class="actions__back"
           :src="backArrow"
@@ -40,6 +40,9 @@ export default {
     ...mapGetters({
       isAuth: 'isAuth',
     }),
+    isBackButtonVisible() {
+      return this.$route.name === 'edit' || this.$route.name === 'view';
+    },
   },
   methods: {
     ...mapActions({
