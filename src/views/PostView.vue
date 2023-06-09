@@ -163,7 +163,7 @@ export default {
 .post {
   width: 100vw;
   position: relative;
-  margin: 0 calc( -0.5 * (100vw - 700px) );
+  margin: 0 calc( -0.5 * (100vw - 700px));
   -webkit-box-shadow: 0px 8px 7px 0px rgb(34 60 80 / 20%);
   -moz-box-shadow: 0px 8px 7px 0px rgb(34 60 80 / 20%);
   box-shadow: 0px 8px 7px 0px rgb(34 60 80 / 20%);

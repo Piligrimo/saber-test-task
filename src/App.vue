@@ -1,8 +1,43 @@
 <template>
   <div id="app">
+    <img
+      v-if="isAuth"
+      class="log-out"
+      :src="logoutIcon"
+      @click="logOut"
+      alt="Выйти"
+    />
     <router-view/>
   </div>
 </template>
+
+<script>
+import { mapActions, mapGetters } from 'vuex';
+import logoutIcon from './assets/logout.svg';
+
+export default {
+  name: 'App',
+  data() {
+    return {
+      logoutIcon,
+    };
+  },
+  computed: {
+    ...mapGetters({
+      isAuth: 'isAuth',
+    }),
+  },
+  methods: {
+    ...mapActions({
+      logOutAction: 'logOut',
+    }),
+    logOut() {
+      this.logOutAction();
+      this.$router.push({ name: 'login' });
+    },
+  },
+};
+</script>
 
 <style>
 #app {
@@ -12,6 +47,7 @@
   color: #2c3e50;
   max-width: 700px;
   margin: auto;
+  margin-top: 70px;
 }
 
 nav {
@@ -47,6 +83,19 @@ h2 {
   box-shadow: 3px 3px 9px 1px rgb(34 60 80 / 20%);
 }
 
+.blog-button._secondary{
+  border: none;
+  color: #8194a7;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  background-color: none;
+}
+
+.blog-button._secondary:hover {
+  background: none;
+  color: #425262;
+}
 .blog-button:hover {
   background-color: #f7f7f7;
 }
@@ -84,5 +133,29 @@ h2 {
   -webkit-box-shadow: 3px 3px 9px 1px rgb(34 60 80 / 20%);
   -moz-box-shadow: 3px 3px 9px 1px rgb(34 60 80 / 20%);
   box-shadow: 3px 3px 9px 1px rgb(34 60 80 / 20%);
+}
+
+.blog-label {
+  color: #8194a7;
+  margin-bottom: 5px;
+  margin-left: 10px;
+}
+
+.blog-error {
+  color: #f71d00;
+  font-size: 12px;
+  margin: 8px 0 0 10px ;
+}
+
+.log-out {
+  width: 40px;
+  position: absolute;
+  top: 70px;
+  cursor: pointer;
+  right: calc(0.5 * (100vw - 700px));
+}
+
+.log-out:hover{
+  opacity: 0.6;
 }
 </style>

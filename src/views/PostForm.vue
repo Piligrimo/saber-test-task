@@ -2,9 +2,9 @@
   <div>
     <h1>{{isEdit ? 'Редактирование поста' : 'Новый пост'}} </h1>
     <div class="form">
-      <p class="form__label">Заголовок</p>
+      <p class="blog-label">Заголовок</p>
       <input class="form__title blog-input" v-model="post.title">
-      <p class="form__label">Текст</p>
+      <p class="blog-label">Текст</p>
       <label for="text">
         <textarea class="form__textarea blog-input" id="text" v-model="post.text" rows="8"/>
       </label>
@@ -83,12 +83,6 @@ export default {
   width: calc(100% - 65px) ;
   resize: none;
   overflow: auto;
-}
-
-.form__label {
-  color: #8194a7;
-  margin-bottom: 5px;
-  margin-left: 10px;
 }
 
 .form__button-container {
