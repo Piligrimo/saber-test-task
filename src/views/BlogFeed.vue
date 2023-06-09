@@ -12,7 +12,7 @@
     </div>
 
     <template v-if="posts.length">
-      <div class="post" v-for="post in posts" :key="post.id">
+      <div class="post blog-card" v-for="post in posts" :key="post.id">
         <div class="post__header">
           <div class="post__info">
             <h2>{{post.title}} <span v-if="post.isEdited" class="post__edited">(ред.)</span></h2>
@@ -24,6 +24,13 @@
                 class="post__action"
                 :src="editIcon"
                 alt="Редактировать пост"
+              />
+           </router-link>
+            <router-link :to="{name: 'view', params: { id: post.id } }">
+              <img
+                class="post__action"
+                :src="commentIcon"
+                alt="Комментировать пост"
               />
            </router-link>
             <img
@@ -50,6 +57,7 @@ import postsApi from '../api/posts';
 import deleteIcon from '../assets/cross.svg';
 import newIcon from '../assets/plus.svg';
 import editIcon from '../assets/edit.svg';
+import commentIcon from '../assets/comment.svg';
 
 export default {
   name: 'BlogFeed',
@@ -59,6 +67,7 @@ export default {
       deleteIcon,
       newIcon,
       editIcon,
+      commentIcon,
     };
   },
   async created() {
@@ -83,14 +92,6 @@ export default {
 
 <style scoped>
 
-.post {
-  margin-bottom: 1rem ;
-  border-radius: 20px;
-  padding: 1rem 2rem;
-  -webkit-box-shadow: 3px 3px 9px 1px rgb(34 60 80 / 20%);
-  -moz-box-shadow: 3px 3px 9px 1px rgb(34 60 80 / 20%);
-  box-shadow: 3px 3px 9px 1px rgb(34 60 80 / 20%);
-}
 .post__time {
   color: #8194a7;
   margin: 0;
@@ -119,6 +120,11 @@ export default {
   opacity: 0;
   transition: opacity 0.3s;
 }
+
+.post__action:hover {
+  opacity: 0.6 !important;
+}
+
 .post:hover .post__action {
   opacity: 1;
 }
@@ -145,6 +151,7 @@ export default {
 }
 
 .new__icon {
+  color: #b0becd;
   width: 56px;
   height: 50px;
 }

@@ -30,4 +30,59 @@ nav a.router-link-exact-active {
 h2 {
   margin: 0;
 }
+
+.blog-button{
+  cursor: pointer;
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  border: 1px solid #828282;
+  background-color: #fff;
+  margin-top: 1rem ;
+  border-radius: 20px;
+  padding: 1rem 2rem;
+  width: 200px;
+  font-weight: 600;
+  font-size: 16px;
+  -webkit-box-shadow: 3px 3px 9px 1px rgb(34 60 80 / 20%);
+  -moz-box-shadow: 3px 3px 9px 1px rgb(34 60 80 / 20%);
+  box-shadow: 3px 3px 9px 1px rgb(34 60 80 / 20%);
+}
+
+.blog-button:hover {
+  background-color: #f7f7f7;
+}
+
+.blog-button._small {
+  padding: 0.5rem 1rem;
+}
+
+.blog-input {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  border: none;
+  border-radius: 20px;
+  padding: 1.2rem 2rem 1rem 2rem;
+  margin-bottom: 1rem;
+  -webkit-box-shadow: inset 4px 4px 9px 3px rgb(34 60 80 / 20%);
+  -moz-box-shadow: inset 4px 4px 9px 3px rgb(34 60 80 / 20%);
+  box-shadow: inset 4px 4px 9px 3px rgb(34 60 80 / 20%);
+}
+
+.blog-input._small {
+  padding: 0.7rem 2rem 0.5rem 2rem;
+}
+
+.blog-input:focus {
+  outline: none !important;
+  border: 2px solid hsl(213, 100%, 79%);
+}
+
+.blog-card {
+  margin-bottom: 1rem ;
+  border-radius: 20px;
+  padding: 1rem 2rem;
+  background: #ffffff;
+  -webkit-box-shadow: 3px 3px 9px 1px rgb(34 60 80 / 20%);
+  -moz-box-shadow: 3px 3px 9px 1px rgb(34 60 80 / 20%);
+  box-shadow: 3px 3px 9px 1px rgb(34 60 80 / 20%);
+}
 </style>
