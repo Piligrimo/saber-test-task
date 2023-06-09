@@ -16,7 +16,7 @@
 </template>
 
 <script>
-
+import { mapState } from 'vuex';
 import postsApi from '../api/posts';
 
 const clone = (obj) => JSON.parse(JSON.stringify(obj));
@@ -35,11 +35,15 @@ export default {
   async created() {
     if (this.isEdit) {
       const { data } = await postsApi.getPostById(this.postId);
+      if (data.author.id !== this.user.id) {
+        this.$router.replace({ name: 'feed' });
+      }
       this.post = data;
       this.initialPost = clone(data);
     }
   },
   computed: {
+    ...mapState({ user: (state) => state.user }),
     isEdit() {
       return this.$route.name === 'edit';
     },
@@ -51,19 +55,20 @@ export default {
     },
   },
   methods: {
-
     async sendPost() {
       if (this.isEdit) {
         await postsApi.editPost(
           this.postId,
           {
             ...this.post,
+            author: this.user,
             isEdited: this.isEdited ? true : this.post.isEdited,
           },
         );
       } else {
         await postsApi.createPost({
           ...this.post,
+          author: this.user,
           time: new Date(),
         });
       }

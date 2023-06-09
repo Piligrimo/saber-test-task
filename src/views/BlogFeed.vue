@@ -1,6 +1,6 @@
 <template>
   <div class="feed">
-    <h1>Блог Максона</h1>
+    <h1>Лента</h1>
     <div class="new">
       <router-link :to="{name: 'new'}">
        <img
@@ -16,10 +16,11 @@
         <div class="post__header">
           <div class="post__info">
             <h2>{{post.title}} <span v-if="post.isEdited" class="post__edited">(ред.)</span></h2>
+            <blog-user class="post__user" :user="post.author" :show-name="true"/>
             <p class="post__time">{{formatTime(post.time)}}</p>
           </div>
           <div class="post__actions">
-            <router-link :to="{name: 'edit', params: { id: post.id } }">
+            <router-link v-if="isMyPost(post)" :to="{name: 'edit', params: { id: post.id } }">
               <img
                 class="post__action"
                 :src="editIcon"
@@ -34,6 +35,7 @@
               />
            </router-link>
             <img
+              v-if="isMyPost(post)"
               class="post__action"
               :src="deleteIcon"
               alt="Удалить пост"
@@ -46,13 +48,15 @@
       </div>
     </template>
     <div v-else class="post none" >
-     <h3> Пока тут пусто, нажми кнопку выше, чтоб написать пост</h3>
+     <h3> Пока тут пусто, нажми кнопку c плюсом, чтоб написать пост</h3>
     </div>
   </div>
 </template>
 
 <script>
 
+import BlogUser from '@/components/BlogUser.vue';
+import { mapState } from 'vuex';
 import postsApi from '../api/posts';
 import deleteIcon from '../assets/cross.svg';
 import newIcon from '../assets/plus.svg';
@@ -60,6 +64,7 @@ import editIcon from '../assets/edit.svg';
 import commentIcon from '../assets/comment.svg';
 
 export default {
+  components: { BlogUser },
   name: 'BlogFeed',
   data() {
     return {
@@ -73,6 +78,9 @@ export default {
   async created() {
     this.init();
   },
+  computed: {
+    ...mapState({ user: (state) => state.user }),
+  },
   methods: {
     async init() {
       const { data } = await postsApi.getPosts();
@@ -81,6 +89,9 @@ export default {
     formatTime(time) {
       if (!time) return '';
       return (new Date(time)).toLocaleString().replace(',', '');
+    },
+    isMyPost(post) {
+      return post.author.id === this.user.id;
     },
     async deletePost(id) {
       await postsApi.deletePost(id);
@@ -128,6 +139,10 @@ export default {
 .post:hover .post__action {
   opacity: 1;
 }
+
+.post__user {
+  margin: 0.5rem 0 0.5rem 0;
+}
 .none {
   padding: 3rem;
   color: #8194a7;
@@ -155,4 +170,5 @@ export default {
   width: 56px;
   height: 50px;
 }
+
 </style>

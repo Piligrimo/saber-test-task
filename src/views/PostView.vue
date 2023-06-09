@@ -4,13 +4,6 @@
       <div class="post__container">
         <div class="post__header">
           <h1>{{post.title || 'Обсуждение'}} </h1>
-          <router-link :to="{name: 'feed'}">
-            <img
-                class="post__action"
-                :src="backArrow"
-                alt="Назад к ленте"
-              />
-          </router-link>
         </div>
         <p>{{post.text}}</p>
         <div class="post__comment-post">
@@ -67,7 +60,6 @@
 import postsApi from '../api/posts';
 import commentApi from '../api/comments';
 import downArrow from '../assets/down.svg';
-import backArrow from '../assets/back.svg';
 
 export default {
   name: 'PostView',
@@ -82,7 +74,6 @@ export default {
       answer: '',
       commentToAnswer: null,
       downArrow,
-      backArrow,
       breakThreshold: 5,
     };
   },
@@ -167,13 +158,6 @@ export default {
   -webkit-box-shadow: 0px 8px 7px 0px rgb(34 60 80 / 20%);
   -moz-box-shadow: 0px 8px 7px 0px rgb(34 60 80 / 20%);
   box-shadow: 0px 8px 7px 0px rgb(34 60 80 / 20%);
-}
-.post__action {
-  width: 35px;
-  margin-top: 30px;
-}
-.post__action:hover {
-  opacity: 0.6;
 }
 .post__container {
   max-width: 700px;

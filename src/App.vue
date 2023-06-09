@@ -1,28 +1,42 @@
 <template>
   <div id="app">
-    <img
-      v-if="isAuth"
-      class="log-out"
-      :src="logoutIcon"
-      @click="logOut"
-      alt="Выйти"
-    />
+    <div v-if="isAuth" class="actions">
+      <router-link v-if="$route.name === 'edit'" :to="{name: 'feed'}">
+        <img
+          class="actions__back"
+          :src="backArrow"
+          alt="Назад к ленте"
+        />
+      </router-link>
+      <blog-user class="actions__user" :user="user"/>
+      <img
+        class="actions__log-out"
+        :src="logoutIcon"
+        @click="logOut"
+        alt="Выйти"
+      />
+    </div>
     <router-view/>
   </div>
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions, mapGetters, mapState } from 'vuex';
 import logoutIcon from './assets/logout.svg';
+import BlogUser from './components/BlogUser.vue';
+import backArrow from './assets/back.svg';
 
 export default {
+  components: { BlogUser },
   name: 'App',
   data() {
     return {
       logoutIcon,
+      backArrow,
     };
   },
   computed: {
+    ...mapState({ user: (state) => state.user }),
     ...mapGetters({
       isAuth: 'isAuth',
     }),
@@ -61,6 +75,10 @@ nav a {
 
 nav a.router-link-exact-active {
   color: #42b983;
+}
+
+h1 {
+  max-width: 550px;
 }
 
 h2 {
@@ -147,15 +165,34 @@ h2 {
   margin: 8px 0 0 10px ;
 }
 
-.log-out {
-  width: 40px;
-  position: absolute;
-  top: 70px;
+.actions__log-out {
+  width: 45px;
   cursor: pointer;
-  right: calc(0.5 * (100vw - 700px));
+  margin-left: 10px;
 }
 
-.log-out:hover{
+.actions__log-out:hover{
+  opacity: 0.6;
+}
+
+.actions {
+  display: flex;
+  align-items: flex-start;
+  position: absolute;
+  top: 70px;
+  right: calc(0.5 * (100vw - 700px));
+  z-index: 5;
+}
+
+.actions__user{
+  margin-top: 2px;
+  margin-left: 15px;
+}
+
+.actions__back {
+  width: 40px;
+}
+.actions__back:hover {
   opacity: 0.6;
 }
 </style>
