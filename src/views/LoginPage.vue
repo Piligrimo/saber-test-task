@@ -17,7 +17,7 @@
       <button class="login__button blog-button" @click="signIn">Войти</button>
       <router-link :to="{name: 'register'}">
         <button class="login__button blog-button _secondary">
-          У еще меня нет аккаунта
+          У меня ещё нет аккаунта
         </button>
       </router-link>
     </div>
