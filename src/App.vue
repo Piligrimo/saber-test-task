@@ -26,6 +26,8 @@ import logoutIcon from './assets/logout.svg';
 import BlogUser from './components/BlogUser.vue';
 import backArrow from './assets/back.svg';
 
+console.log('test', process.env.NODE_ENV);
+
 export default {
   components: { BlogUser },
   name: 'App',
