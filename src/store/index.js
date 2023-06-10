@@ -7,6 +7,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     user: null,
+    toastMessage: '',
   },
   getters: {
     isAuth(state) {
@@ -16,6 +17,9 @@ export default new Vuex.Store({
   mutations: {
     setUser(state, user) {
       state.user = user;
+    },
+    setToast(state, message) {
+      state.toastMessage = message;
     },
   },
   actions: {
@@ -34,6 +38,13 @@ export default new Vuex.Store({
       const { password, ...user } = data[0];
       commit('setUser', user);
       localStorage.setItem('user', JSON.stringify(user));
+    },
+
+    async checkLogin(_, payload) {
+      const { data } = await authApi.checkLogin(payload);
+      if (data.length) {
+        throw new Error('Логин уже занят');
+      }
     },
 
     logOut({ commit }) {

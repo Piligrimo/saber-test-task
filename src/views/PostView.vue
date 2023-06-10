@@ -58,7 +58,7 @@
 
 <script>
 
-import { mapState } from 'vuex';
+import { mapMutations, mapState } from 'vuex';
 import BlogUser from '@/components/BlogUser.vue';
 import postsApi from '../api/posts';
 import commentApi from '../api/comments';
@@ -92,30 +92,52 @@ export default {
     },
   },
   methods: {
+    ...mapMutations({
+      renderToast: 'setToast',
+    }),
     async getPost() {
-      const { data } = await postsApi.getPostById(this.postId);
-      this.post = data;
+      try {
+        const { data } = await postsApi.getPostById(this.postId);
+        this.post = data;
+      } catch (e) {
+        if (e.response?.status === 404) {
+          this.$router.replace('/404');
+        } else {
+          this.renderToast('Произошла ошибка при загрузке поста');
+        }
+        console.error(e);
+      }
     },
     async getInitialComments() {
-      const { data } = await commentApi.getCommentsByPost(this.postId);
-      this.comments = data.map((comment) => ({ depth: 0, ...comment }));
+      try {
+        const { data } = await commentApi.getCommentsByPost(this.postId);
+        this.comments = data.map((comment) => ({ depth: 0, ...comment }));
+      } catch (e) {
+        this.renderToast('Произошла ошибка при загрузке комментариев');
+        console.error(e);
+      }
     },
     async getAnwers(comment) {
-      const { data } = await commentApi.getAnwersByComment(comment.id);
-      const formattedFetchedComments = data
-        .filter(({ id }) => this.isIdUnique(id))
-        .map((item) => ({ depth: comment.depth + 1, ...item }));
+      try {
+        const { data } = await commentApi.getAnwersByComment(comment.id);
+        const formattedFetchedComments = data
+          .filter(({ id }) => this.isIdUnique(id))
+          .map((item) => ({ depth: comment.depth + 1, ...item }));
 
-      const commentsTemp = this.comments.slice();
+        const commentsTemp = this.comments.slice();
 
-      const index = commentsTemp.findIndex(({ id }) => id === comment.id);
-      commentsTemp.splice(
-        index + 1,
-        0,
-        ...formattedFetchedComments,
-      );
+        const index = commentsTemp.findIndex(({ id }) => id === comment.id);
+        commentsTemp.splice(
+          index + 1,
+          0,
+          ...formattedFetchedComments,
+        );
 
-      this.comments = commentsTemp;
+        this.comments = commentsTemp;
+      } catch (e) {
+        this.renderToast('Произошла ошибка при загрузке комментариев');
+        console.error(e);
+      }
     },
     async createComment(targetType, parentComment) {
       const comment = {
@@ -126,13 +148,18 @@ export default {
         },
         author: this.user,
       };
-      await commentApi.createComment(comment);
-      if (targetType === 'post') {
-        this.comment = '';
-        this.getInitialComments();
-      } else {
-        this.answer = '';
-        this.getAnwers(parentComment);
+      try {
+        await commentApi.createComment(comment);
+        if (targetType === 'post') {
+          this.comment = '';
+          this.getInitialComments();
+        } else {
+          this.answer = '';
+          this.getAnwers(parentComment);
+        }
+      } catch (e) {
+        this.renderToast('Произошла ошибка при отправке комментария');
+        console.error(e);
       }
     },
     async expandComment(comment) {

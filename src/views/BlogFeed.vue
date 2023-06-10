@@ -47,8 +47,11 @@
         <p>{{post.text}}</p>
       </div>
     </template>
-    <div v-else class="post none" >
+    <div v-else-if="!isError" class="none blog-card" >
      <h3> Пока тут пусто, нажми кнопку c плюсом, чтоб написать пост</h3>
+    </div>
+    <div v-else class="none blog-card _error" >
+     <h3> При загрузке постов произошла ошибка!</h3>
     </div>
   </div>
 </template>
@@ -56,7 +59,7 @@
 <script>
 
 import BlogUser from '@/components/BlogUser.vue';
-import { mapState } from 'vuex';
+import { mapMutations, mapState } from 'vuex';
 import postsApi from '../api/posts';
 import deleteIcon from '../assets/cross.svg';
 import newIcon from '../assets/plus.svg';
@@ -69,6 +72,7 @@ export default {
   data() {
     return {
       posts: [],
+      isError: false,
       deleteIcon,
       newIcon,
       editIcon,
@@ -82,9 +86,17 @@ export default {
     ...mapState({ user: (state) => state.user }),
   },
   methods: {
+    ...mapMutations({
+      renderToast: 'setToast',
+    }),
     async init() {
-      const { data } = await postsApi.getPosts();
-      this.posts = data.sort((a, b) => new Date(b.time) - new Date(a.time));
+      try {
+        const { data } = await postsApi.getPosts();
+        this.posts = data.sort((a, b) => new Date(b.time) - new Date(a.time));
+      } catch (e) {
+        this.isError = true;
+        console.error(e);
+      }
     },
     formatTime(time) {
       if (!time) return '';
@@ -94,8 +106,13 @@ export default {
       return post.author.id === this.user.id;
     },
     async deletePost(id) {
-      await postsApi.deletePost(id);
-      this.init();
+      try {
+        await postsApi.deletePost(id);
+        this.init();
+      } catch (e) {
+        console.error(e);
+        this.renderToast('Произошла ошибка при удалении поста');
+      }
     },
   },
 };
@@ -123,6 +140,7 @@ export default {
 .post__actions {
   display: flex;
   justify-content: space-between;
+  margin-left: 10px;
 }
 
 .post__action {
@@ -144,9 +162,14 @@ export default {
   margin: 0.5rem 0 0.5rem 0;
 }
 .none {
+  margin-top: 4rem;
   padding: 3rem;
   color: #8194a7;
   text-align: center;
+}
+
+.none._error {
+  color: #f71d00;
 }
 
 .new {

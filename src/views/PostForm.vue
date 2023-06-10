@@ -8,6 +8,7 @@
       <label for="text">
         <textarea class="form__textarea blog-input" id="text" v-model="post.text" rows="8"/>
       </label>
+      <p v-if="errorMessage" class="blog-error">{{errorMessage}}</p>
       <div class="form__button-container">
         <button class="blog-button" @click="sendPost">Отправить</button>
       </div>
@@ -16,7 +17,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapMutations, mapState } from 'vuex';
 import postsApi from '../api/posts';
 
 const clone = (obj) => JSON.parse(JSON.stringify(obj));
@@ -29,17 +30,27 @@ export default {
         title: '',
         text: '',
       },
+      errorMessage: '',
       initialPost: null,
     };
   },
   async created() {
     if (this.isEdit) {
-      const { data } = await postsApi.getPostById(this.postId);
-      if (data.author.id !== this.user.id) {
-        this.$router.replace({ name: 'feed' });
+      try {
+        const { data } = await postsApi.getPostById(this.postId);
+        if (data.author.id !== this.user.id) {
+          this.$router.replace({ name: 'feed' });
+        }
+        this.post = data;
+        this.initialPost = clone(data);
+      } catch (e) {
+        if (e.response?.status === 404) {
+          this.$router.replace('/404');
+        } else {
+          this.renderToast('Произошла ошибка при загрузке поста');
+        }
+        console.error(e);
       }
-      this.post = data;
-      this.initialPost = clone(data);
     }
   },
   computed: {
@@ -55,24 +66,42 @@ export default {
     },
   },
   methods: {
+    ...mapMutations({
+      renderToast: 'setToast',
+    }),
     async sendPost() {
-      if (this.isEdit) {
-        await postsApi.editPost(
-          this.postId,
-          {
+      this.errorMessage = '';
+      const emptyFields = [];
+
+      if (!this.post.title) emptyFields.push('заголовок');
+      if (!this.post.text) emptyFields.push('текст');
+
+      if (emptyFields.length) {
+        this.errorMessage = `Введите ${emptyFields.join(' и ')} поста`;
+        return;
+      }
+
+      try {
+        if (this.isEdit) {
+          await postsApi.editPost(
+            this.postId,
+            {
+              ...this.post,
+              author: this.user,
+              isEdited: this.isEdited ? true : this.post.isEdited,
+            },
+          );
+        } else {
+          await postsApi.createPost({
             ...this.post,
             author: this.user,
-            isEdited: this.isEdited ? true : this.post.isEdited,
-          },
-        );
-      } else {
-        await postsApi.createPost({
-          ...this.post,
-          author: this.user,
-          time: new Date(),
-        });
+            time: new Date(),
+          });
+        }
+        this.$router.push({ name: 'feed' });
+      } catch (e) {
+        this.renderToast('Произошла ошибка при отправке поста');
       }
-      this.$router.push({ name: 'feed' });
     },
   },
 };
@@ -88,6 +117,7 @@ export default {
   width: calc(100% - 65px) ;
   resize: none;
   overflow: auto;
+  margin-bottom: 0;
 }
 
 .form__button-container {

@@ -50,6 +50,7 @@ export default {
   methods: {
     ...mapActions({
       registerAction: 'register',
+      checkLoginAction: 'checkLogin',
     }),
     async register() {
       this.errorMessage = '';
@@ -66,8 +67,14 @@ export default {
         this.errorMessage = 'Поля с паролем должны совпадать';
         return;
       }
-      await this.registerAction({ login: this.login, password: this.password });
-      this.$router.push({ name: 'feed' });
+      try {
+        await this.checkLoginAction(this.login);
+        await this.registerAction({ login: this.login, password: this.password });
+        this.$router.push({ name: 'feed' });
+      } catch (e) {
+        this.errorMessage = e.message;
+        console.error(e);
+      }
     },
   },
 };

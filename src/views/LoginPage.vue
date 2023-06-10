@@ -44,12 +44,15 @@ export default {
     async signIn() {
       this.errorMessage = '';
       const emptyFields = [];
+
       if (!this.login) emptyFields.push('логин');
       if (!this.password) emptyFields.push('пароль');
+
       if (emptyFields.length) {
         this.errorMessage = `Введите ${emptyFields.join(' и ')}`;
         return;
       }
+
       try {
         await this.signInAction({ login: this.login, password: this.password });
         this.$router.push({ name: 'feed' });

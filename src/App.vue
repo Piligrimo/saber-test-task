@@ -17,6 +17,7 @@
       />
     </div>
     <router-view/>
+    <blog-toast />
   </div>
 </template>
 
@@ -25,9 +26,10 @@ import { mapActions, mapGetters, mapState } from 'vuex';
 import logoutIcon from './assets/logout.svg';
 import BlogUser from './components/BlogUser.vue';
 import backArrow from './assets/back.svg';
+import BlogToast from './components/BlogToast.vue';
 
 export default {
-  components: { BlogUser },
+  components: { BlogUser, BlogToast },
   name: 'App',
   data() {
     return {
@@ -41,7 +43,8 @@ export default {
       isAuth: 'isAuth',
     }),
     isBackButtonVisible() {
-      return this.$route.name === 'edit' || this.$route.name === 'view';
+      const routes = ['new', 'edit', 'view'];
+      return routes.includes(this.$route.name);
     },
   },
   methods: {
@@ -82,10 +85,16 @@ nav a.router-link-exact-active {
 
 h1 {
   max-width: 550px;
+  word-break: break-word;
 }
 
 h2 {
   margin: 0;
+  word-break: break-word;
+}
+
+p {
+  word-break: break-word;
 }
 
 .blog-button{
