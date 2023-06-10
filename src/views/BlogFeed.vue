@@ -39,7 +39,7 @@
               class="post__action"
               :src="deleteIcon"
               alt="Удалить пост"
-              @click="deletePost(post.id)"
+              @click="choosePost(post.id)"
             />
 
           </div>
@@ -53,6 +53,13 @@
     <div v-else class="none blog-card _error" >
      <h3> При загрузке постов произошла ошибка!</h3>
     </div>
+    <blog-confirm-modal
+      :visible="isModalVisible"
+      title="Пост будет удален!"
+      text="Ты уверен, что хочешь продолжить?"
+      @confirm="deletePost(chosenPost)"
+      @decline="isModalVisible = false"
+    />
   </div>
 </template>
 
@@ -60,6 +67,7 @@
 
 import BlogUser from '@/components/BlogUser.vue';
 import { mapMutations, mapState } from 'vuex';
+import BlogConfirmModal from '@/components/BlogConfirmModal.vue';
 import postsApi from '../api/posts';
 import deleteIcon from '../assets/cross.svg';
 import newIcon from '../assets/plus.svg';
@@ -67,12 +75,14 @@ import editIcon from '../assets/edit.svg';
 import commentIcon from '../assets/comment.svg';
 
 export default {
-  components: { BlogUser },
+  components: { BlogUser, BlogConfirmModal },
   name: 'BlogFeed',
   data() {
     return {
       posts: [],
       isError: false,
+      isModalVisible: false,
+      chosenPost: null,
       deleteIcon,
       newIcon,
       editIcon,
@@ -105,6 +115,10 @@ export default {
     isMyPost(post) {
       return post.author.id === this.user.id;
     },
+    choosePost(id) {
+      this.isModalVisible = true;
+      this.chosenPost = id;
+    },
     async deletePost(id) {
       try {
         await postsApi.deletePost(id);
@@ -112,6 +126,9 @@ export default {
       } catch (e) {
         console.error(e);
         this.renderToast('Произошла ошибка при удалении поста');
+      } finally {
+        this.chosenPost = null;
+        this.isModalVisible = false;
       }
     },
   },
