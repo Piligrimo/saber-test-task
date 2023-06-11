@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapMutations } from 'vuex';
 
 export default {
   name: 'RegisterPage',
@@ -51,6 +51,9 @@ export default {
     ...mapActions({
       registerAction: 'register',
       checkLoginAction: 'checkLogin',
+    }),
+    ...mapMutations({
+      setLoading: 'setLoading',
     }),
     async register() {
       this.errorMessage = '';
@@ -68,12 +71,15 @@ export default {
         return;
       }
       try {
+        this.setLoading(true);
         await this.checkLoginAction(this.login);
         await this.registerAction({ login: this.login, password: this.password });
         this.$router.push({ name: 'feed' });
       } catch (e) {
         this.errorMessage = e.message;
         console.error(e);
+      } finally {
+        this.setLoading(false);
       }
     },
   },

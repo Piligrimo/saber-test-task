@@ -37,10 +37,13 @@ export default {
   async created() {
     if (this.isEdit) {
       try {
+        this.setLoading(true);
         const { data } = await postsApi.getPostById(this.postId);
+
         if (data.author.id !== this.user.id) {
           this.$router.replace({ name: 'feed' });
         }
+
         this.post = data;
         this.initialPost = clone(data);
       } catch (e) {
@@ -50,6 +53,8 @@ export default {
           this.renderToast('Произошла ошибка при загрузке поста');
         }
         console.error(e);
+      } finally {
+        this.setLoading(false);
       }
     }
   },
@@ -68,6 +73,7 @@ export default {
   methods: {
     ...mapMutations({
       renderToast: 'setToast',
+      setLoading: 'setLoading',
     }),
     async sendPost() {
       this.errorMessage = '';
@@ -82,6 +88,7 @@ export default {
       }
 
       try {
+        this.setLoading(true);
         if (this.isEdit) {
           await postsApi.editPost(
             this.postId,
@@ -101,6 +108,8 @@ export default {
         this.$router.push({ name: 'feed' });
       } catch (e) {
         this.renderToast('Произошла ошибка при отправке поста');
+      } finally {
+        this.setLoading(false);
       }
     },
   },

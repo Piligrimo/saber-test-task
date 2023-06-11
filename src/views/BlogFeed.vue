@@ -98,14 +98,18 @@ export default {
   methods: {
     ...mapMutations({
       renderToast: 'setToast',
+      setLoading: 'setLoading',
     }),
     async init() {
       try {
+        this.setLoading(true);
         const { data } = await postsApi.getPosts();
         this.posts = data.sort((a, b) => new Date(b.time) - new Date(a.time));
       } catch (e) {
         this.isError = true;
         console.error(e);
+      } finally {
+        this.setLoading(false);
       }
     },
     formatTime(time) {
@@ -121,6 +125,7 @@ export default {
     },
     async deletePost(id) {
       try {
+        this.setLoading(true);
         await postsApi.deletePost(id);
         this.init();
       } catch (e) {
@@ -129,6 +134,7 @@ export default {
       } finally {
         this.chosenPost = null;
         this.isModalVisible = false;
+        this.setLoading(false);
       }
     },
   },

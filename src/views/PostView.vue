@@ -2,9 +2,8 @@
   <div>
     <div class="post">
       <div class="post__container">
-        <div class="post__header">
-          <h1>{{post.title || 'Обсуждение'}} </h1>
-        </div>
+        <h1  class="post__header">{{post.title || 'Обсуждение'}} </h1>
+        <blog-user v-if="post && post.author" :user="post.author" :showName="true"/>
         <p>{{post.text}}</p>
         <div class="post__comment-post">
           <input
@@ -94,9 +93,11 @@ export default {
   methods: {
     ...mapMutations({
       renderToast: 'setToast',
+      setLoading: 'setLoading',
     }),
     async getPost() {
       try {
+        this.setLoading(true);
         const { data } = await postsApi.getPostById(this.postId);
         this.post = data;
       } catch (e) {
@@ -106,15 +107,20 @@ export default {
           this.renderToast('Произошла ошибка при загрузке поста');
         }
         console.error(e);
+      } finally {
+        this.setLoading(false);
       }
     },
     async getInitialComments() {
       try {
+        this.setLoading(true);
         const { data } = await commentApi.getCommentsByPost(this.postId);
         this.comments = data.map((comment) => ({ depth: 0, ...comment }));
       } catch (e) {
         this.renderToast('Произошла ошибка при загрузке комментариев');
         console.error(e);
+      } finally {
+        this.setLoading(false);
       }
     },
     async getAnwers(comment) {
@@ -149,23 +155,28 @@ export default {
         author: this.user,
       };
       try {
+        this.setLoading(true);
         await commentApi.createComment(comment);
         if (targetType === 'post') {
           this.comment = '';
-          this.getInitialComments();
+          await this.getInitialComments();
         } else {
           this.answer = '';
-          this.getAnwers(parentComment);
+          await this.getAnwers(parentComment);
         }
       } catch (e) {
         this.renderToast('Произошла ошибка при отправке комментария');
         console.error(e);
+      } finally {
+        this.setLoading(false);
       }
     },
     async expandComment(comment) {
       this.answer = '';
       this.commentToAnswer = comment.id;
-      this.getAnwers(comment);
+      this.setLoading(true);
+      await this.getAnwers(comment);
+      this.setLoading(false);
     },
     isIdUnique(_id) {
       return !this.comments.find(({ id }) => id === _id);
@@ -198,9 +209,7 @@ export default {
   padding-bottom: 2rem;
 }
 .post__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  margin-bottom: 0.5rem;
 }
 .post__comment-post {
   display: flex;

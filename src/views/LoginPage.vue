@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapMutations } from 'vuex';
 
 export default {
   name: 'LoginPage',
@@ -41,6 +41,9 @@ export default {
     ...mapActions({
       signInAction: 'signIn',
     }),
+    ...mapMutations({
+      setLoading: 'setLoading',
+    }),
     async signIn() {
       this.errorMessage = '';
       const emptyFields = [];
@@ -54,11 +57,14 @@ export default {
       }
 
       try {
+        this.setLoading(true);
         await this.signInAction({ login: this.login, password: this.password });
         this.$router.push({ name: 'feed' });
       } catch (e) {
         console.error(e);
         this.errorMessage = e.message;
+      } finally {
+        this.setLoading(false);
       }
     },
   },

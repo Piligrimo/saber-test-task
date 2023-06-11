@@ -18,6 +18,7 @@
     </div>
     <router-view/>
     <blog-toast />
+    <blog-loading />
   </div>
 </template>
 
@@ -27,9 +28,10 @@ import logoutIcon from './assets/logout.svg';
 import BlogUser from './components/BlogUser.vue';
 import backArrow from './assets/back.svg';
 import BlogToast from './components/BlogToast.vue';
+import BlogLoading from './components/BlogLoading.vue';
 
 export default {
-  components: { BlogUser, BlogToast },
+  components: { BlogUser, BlogToast, BlogLoading },
   name: 'App',
   data() {
     return {

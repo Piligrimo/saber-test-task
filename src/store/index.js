@@ -8,6 +8,7 @@ export default new Vuex.Store({
   state: {
     user: null,
     toastMessage: '',
+    isLoading: false,
   },
   getters: {
     isAuth(state) {
@@ -20,6 +21,9 @@ export default new Vuex.Store({
     },
     setToast(state, message) {
       state.toastMessage = message;
+    },
+    setLoading(state, val) {
+      state.isLoading = val;
     },
   },
   actions: {
